@@ -77,7 +77,7 @@ Vagrant.configure("2") do |config|
     exec "vagrant " + ARGV.join(' ')
   end
   # Set size of vm
-  config.disksize.size = "40GB"
+  config.disksize.size = "50GB"
 
   # Node-1 configuration
   config.vm.define "node1" do |node1|
@@ -91,11 +91,13 @@ Vagrant.configure("2") do |config|
     #config.vm.network "private_network", ip: "192.168.33.10"
     #config.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)"
     config.vm.synced_folder "./Node1", "/vagrant"
+    config.vm.network :forwarded_port, id: 'ssh', guest: 22, host: 2222
     config.vm.provider "virtualbox" do |vb|
       vb.gui = false
       vb.memory = "4024"
     end
     config.vm.provision :shell, :inline => "sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config; sudo systemctl restart sshd;", run: "always"
     config.vm.provision "shell", path: "./Node1/setup.sh", privileged: "false"
+	config.vm.provision :shell, :inline => "sudo echo 'toor' | passwd root --stdin"
   end
 end
