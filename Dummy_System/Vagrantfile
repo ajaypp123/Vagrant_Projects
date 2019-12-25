@@ -84,17 +84,18 @@ Vagrant.configure("2") do |config|
     config.vm.hostname = "node1.example.com"
 
     # Root login
-    config.ssh.username = 'root'
-    config.ssh.password = 'vagrant'
-    config.ssh.insert_key = 'true'
+    #config.ssh.username = 'root'
+    #config.ssh.password = 'vagrant'
+    #config.ssh.insert_key = 'true'
 
-    config.vm.network "private_network", ip: "192.168.33.10"
-    config.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)"
+    #config.vm.network "private_network", ip: "192.168.33.10"
+    #config.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)"
     config.vm.synced_folder "./Node1", "/vagrant"
     config.vm.provider "virtualbox" do |vb|
       vb.gui = false
       vb.memory = "4024"
     end
-    #config.vm.provision "shell", path: "./stats_config.sh", privileged: "false"
+    config.vm.provision :shell, :inline => "sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config; sudo systemctl restart sshd;", run: "always"
+    config.vm.provision "shell", path: "./Node1/setup.sh", privileged: "false"
   end
 end
